@@ -22,14 +22,14 @@ namespace wuAL
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window,INotifyPropertyChanged
     {
         ObservableCollection<TorrentActionData> _TorrentActions = new ObservableCollection<TorrentActionData>();
         bool _connected = false;
         bool _localhost = true;
-        bool _connecting = true;
+        bool _connecting = false;
         string _hostAddress = "N/A";
-        Regex _hostnameRegExp = new Regex("/[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\:[0-9]{1,5}/");
+        Regex _hostnameRegExp = new Regex("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\:[0-9]{1,5}");
 
         public MainWindow()
         {
@@ -42,9 +42,23 @@ namespace wuAL
         public bool Connected { get { return _connected && !_connecting; } }
         public bool NotConnected { get { return !_connected && !_connecting; } }
         public bool Connecting { get { Console.WriteLine("AMAGAD!"); return _connecting; } }
-        public bool NotLocalhost { get { return !_localhost; } }
+        public bool IsLocalhost
+        {
+            get { return _localhost; }
+            set
+            {
+                _localhost = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("IsLocalhost"));
+            }
+        }
         public string HostAddress { get { return _hostAddress; } }
-        public bool IsValidSettings { get { return Properties.Settings.Default.validConnectionSettings; } }
+        public bool IsValidSettings { get { return Properties.Settings.Default.validConnectionSettings; }
+            set
+            {
+                Properties.Settings.Default.validConnectionSettings = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("IsValidSettings"));
+            }
+        }
         #endregion
 
         private void Connect(object sender, RoutedEventArgs e)
@@ -54,25 +68,25 @@ namespace wuAL
 
         private void ValidateSettings()
         {
-            if (!Properties.Settings.Default.validConnectionSettings)
+            if (!IsValidSettings)
             {
-                _localhost = (HostnameBox.Text.Contains("127.0.0.1") || HostnameBox.Text.ToLower().Contains("localhost"));
-                if (!_localhost)
+                IsLocalhost = (HostnameBox.Text.Contains("127.0.0.1") || HostnameBox.Text.ToLower().Contains("localhost"));
+                if (!IsLocalhost)
                 {
                     if (_hostnameRegExp.IsMatch(HostnameBox.Text))
                         if (Directory.Exists(TorrentDirBox.Text))
                             Properties.Settings.Default.validConnectionSettings = true;
 
                 }
-                else if (_localhost)
-                    Properties.Settings.Default.validConnectionSettings = true;
+                else if (IsLocalhost)
+                    IsValidSettings = true;
             }
-            Console.WriteLine(HostnameBox.Text + " is " + _localhost);
+            Console.WriteLine(HostnameBox.Text + " is " + IsLocalhost);
         }
 
         private void Connect()
         {
-            if (Properties.Settings.Default.validConnectionSettings)
+            if (IsValidSettings)
             {
                 try
                 {
@@ -104,6 +118,8 @@ namespace wuAL
         {
             _connecting = !_connecting;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class Visuals : INotifyPropertyChanged

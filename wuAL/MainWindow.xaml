@@ -29,8 +29,8 @@
             <PasswordBox Name="PasswordBox" Grid.Column="1" Grid.Row="2" PasswordChanged="SettingsTextChanged"/>
             <Label Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right">Host:port</Label>
             <TextBox Name="HostnameBox" Grid.Column="1" Grid.Row="4" TextChanged="SettingsTextChanged"/>
-            <Label Visibility="{Binding Path=NotLocalhost, Converter={StaticResource boolToVis}}" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Right">Torrent-directory</Label>
-            <TextBox Name="TorrentDirBox"  Visibility="{Binding Path=NotLocalhost, Converter={StaticResource boolToVis}}" Grid.Column="1" Grid.Row="6" TextChanged="SettingsTextChanged" />
+            <Label Visibility="{Binding Path=IsLocalhost, Converter={StaticResource boolToVis}}" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Right">Torrent-directory</Label>
+            <TextBox Name="TorrentDirBox"  Visibility="{Binding Path=IsLocalhost, Converter={StaticResource boolToVis}}" Grid.Column="1" Grid.Row="6" TextChanged="SettingsTextChanged" />
             <Button Grid.Row="8" Grid.ColumnSpan="2" Width="100" Click="Connect" IsEnabled="{Binding IsValidSettings}">Connect...</Button>
         </Grid>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Visibility="{Binding Path=Connected, Converter={StaticResource boolToVis}}">

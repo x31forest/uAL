@@ -2,6 +2,7 @@
 using System.IO;
 using System.Configuration;
 using System.Collections.Generic;
+using uAL.Infrastructure;
 
 namespace uAL
 {
@@ -9,7 +10,6 @@ namespace uAL
     {
         public static Settings settings = new Settings();
         public static List<string> Labels;
-        public static TorrentAPI t;
 
         static void Main(string[] args)
         {
@@ -56,9 +56,9 @@ namespace uAL
 
             try
             {
-                t = new TorrentAPI(settings.Host, settings.UserName, settings.Password);
+                var torrentAPI = new TorrentAPI(settings.Host, settings.UserName, settings.Password);
                 if (settings.Dir == "")
-                    settings.Dir = t.GetDownloadDir();
+                    settings.Dir = torrentAPI.GetDownloadDir();
 
                 Console.WriteLine("Detecting label folders...");
                 Console.WriteLine("Detected: ");
@@ -69,11 +69,13 @@ namespace uAL
                     Console.WriteLine(label.Name);
                     Labels.Add(label.Name);
                 }
-                FileSystemMonitor fs = new FileSystemMonitor();
+                TorrentFileSystemMonitor fs = new TorrentFileSystemMonitor((f, s) => { torrentAPI.AddTorrent(f, s); });
                 Console.WriteLine("Connection successful!");
+                LoggingAdapter.Info("Connection successful!");
             }
             catch (Exception ex)
             {
+                LoggingAdapter.Error("Could not connect to uTorrent. Please exit this program, start uTorrent, and try again.", ex);
                 Console.WriteLine("Could not connect to uTorrent. Please exit this program, start uTorrent, and try again.");
                 Console.WriteLine("########");
                 Console.WriteLine("# Error: " + ex.Message);
