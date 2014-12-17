@@ -41,6 +41,14 @@ namespace uAL
                     {
                         LoggingAdapter.Error("Couldn't open the torrent file: " + e.FullPath, ex);
                     }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        LoggingAdapter.Error("Couldn't access the torrent file: " + e.FullPath, ex);
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggingAdapter.Error("Unknown exception occured while accessing the torrent file " + e.FullPath, ex);
+                    }
 
                 }
                 if (retries==MAX_RETRIES_LOCK){
