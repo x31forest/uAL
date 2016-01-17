@@ -3,6 +3,7 @@ using System.IO;
 using System.Configuration;
 using System.Collections.Generic;
 using uAL.Infrastructure;
+using System.Windows;
 
 namespace uAL
 {
@@ -14,6 +15,9 @@ namespace uAL
         static void Main(string[] args)
         {
             Console.WriteLine("Starting...");
+            // This handler is for catching non-UI thread exceptions
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
             if (settings.UserName == "" && settings.Password == "")
             {
                 Console.WriteLine("This is your first time starting this application.");
@@ -97,6 +101,19 @@ namespace uAL
                 return;
             }
             settings.Save();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Exception ex = (Exception)e.ExceptionObject;
+                LoggingAdapter.Error("Unhadled domain exception:\n\n" + ex.Message, ex);
+            }
+            catch (Exception exc)
+            {            
+                    LoggingAdapter.Error("Fatal exception happend inside UnhadledExceptionHandler: \n\n" + exc.Message, exc);                
+            }
         }
     }
 
