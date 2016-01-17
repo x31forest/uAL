@@ -105,14 +105,14 @@ namespace uAL
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            try
+            try 
             {
                 Exception ex = (Exception)e.ExceptionObject;
                 LoggingAdapter.Error("Unhadled domain exception:\n\n" + ex.Message, ex);
             }
             catch (Exception exc)
-            {            
-                    LoggingAdapter.Error("Fatal exception happend inside UnhadledExceptionHandler: \n\n" + exc.Message, exc);                
+            {
+                LoggingAdapter.Error("Fatal exception happend inside UnhadledExceptionHandler: \n\n" + exc.Message, exc);
             }
         }
     }
